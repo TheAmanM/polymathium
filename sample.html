@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>University Discipline Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-blue: #3a36b6;
+        --primary-blue-dark: #2a258c;
+        --bg-color: #f3f4f8;
+        --card-bg: #ffffff;
+        --text-main: #1a1c24;
+        --text-muted: #8a8e9f;
+        --border-light: #e8e9ee;
+        --accent-purple: #a533ff;
+        --accent-green: #34c759;
+        --accent-orange: #ff9500;
+        --tag-bg: #f0f2f6;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        padding-bottom: 50px;
+      }
+
+      /* Navigation */
+      .navbar {
+        background-color: var(--primary-blue);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 40px;
+        height: 60px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+        margin: 0 20px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 40px;
+        text-transform: uppercase;
+      }
+
+      .nav-link {
+        cursor: pointer;
+        position: relative;
+      }
+
+      .nav-link sup {
+        font-size: 8px;
+        position: absolute;
+        top: -4px;
+        right: -10px;
+      }
+
+      .nav-icons {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .icon {
+        width: 20px;
+        height: 20px;
+        stroke: white;
+        fill: none;
+        stroke-width: 2;
+        cursor: pointer;
+      }
+
+      /* Main Container */
+      .container {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      /* Search Bar */
+      .search-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 50px;
+      }
+
+      .search-wrapper {
+        display: flex;
+        width: 600px;
+        background: #e8eaed;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+
+      .search-input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        padding: 12px 20px;
+        font-size: 13px;
+        outline: none;
+        color: var(--text-main);
+      }
+
+      .search-input::placeholder {
+        color: #9aa0b1;
+      }
+
+      .search-btn {
+        background-color: var(--primary-blue);
+        color: white;
+        border: none;
+        padding: 0 30px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      .search-btn:hover {
+        background-color: var(--primary-blue-dark);
+      }
+
+      /* Typography */
+      h1 {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 25px;
+      }
+
+      h2 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+
+      .subtitle {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+      }
+
+      /* Grids */
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+
+      /* Cards */
+      .card {
+        background: var(--card-bg);
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        position: relative;
+      }
+
+      .card-title-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-weight: 600;
+        font-size: 15px;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+
+      .dot.purple {
+        background-color: var(--accent-purple);
+      }
+      .dot.green {
+        background-color: var(--accent-green);
+      }
+      .dot.orange {
+        background-color: var(--accent-orange);
+      }
+
+      .card-desc {
+        font-size: 12px;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+
+      .tags {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+
+      .tag {
+        background-color: var(--tag-bg);
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .bookmark-icon {
+        width: 14px;
+        height: 14px;
+        stroke: var(--text-muted);
+        fill: none;
+        stroke-width: 2;
+        cursor: pointer;
+      }
+
+      /* Middle Row Add-ons */
+      .grid-middle {
+        display: grid;
+        grid-template-columns: 2fr 3fr;
+        gap: 20px;
+        margin-bottom: 50px;
+        height: 90px;
+      }
+
+      .results-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 24px;
+      }
+
+      .results-title {
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+
+      .avatars {
+        display: flex;
+        align-items: center;
+      }
+
+      .avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid white;
+        background-color: #ddd;
+        margin-left: -8px;
+      }
+
+      .avatar:first-child {
+        margin-left: 0;
+      }
+
+      .btn-status {
+        background-color: #bc52ff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .add-card {
+        border: 1px dashed #d2d5e1;
+        background: transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        border-radius: 8px;
+      }
+
+      .add-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #e8eaed;
+        color: #9aa0b1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 16px;
+      }
+
+      /* Sources Section */
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 20px;
+      }
+
+      .add-source-btn {
+        background: transparent;
+        border: 1px solid #d2d5e1;
+        padding: 6px 16px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: var(--text-muted);
+        cursor: pointer;
+        margin-bottom: 8px;
+      }
+
+      .new-sources-link {
+        font-size: 12px;
+        color: #4a90e2;
+        text-decoration: none;
+        display: block;
+        text-align: right;
+      }
+
+      /* Source Cards */
+      .source-card {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .source-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-light);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .caret-icon {
+        width: 16px;
+        height: 16px;
+        stroke: var(--text-main);
+        stroke-width: 2;
+      }
+
+      .source-user {
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .user-info .name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--primary-blue);
+      }
+
+      .user-info .uni {
+        font-size: 11px;
+        color: var(--text-muted);
+      }
+
+      .source-stats {
+        display: flex;
+        padding: 0 24px 20px;
+      }
+
+      .stat-block {
+        flex: 1;
+      }
+
+      .stat-value {
+        font-size: 22px;
+        color: #4a90e2;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        color: var(--text-main);
+        font-weight: 600;
+      }
+
+      .source-footer {
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        padding: 16px 24px;
+      }
+
+      .footer-block {
+        flex: 1;
+        font-size: 10px;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+
+      /* See More Button */
+      .see-more-btn {
+        width: 100%;
+        background-color: #e8eaed;
+        color: var(--text-muted);
+        border: none;
+        padding: 16px;
+        font-size: 12px;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-top: 30px;
+      }
+
+      /* SVG Image placeholding via unspalsh/ui faces */
+      .av-1 {
+        background-image: url("https://i.pravatar.cc/100?img=1");
+        background-size: cover;
+      }
+      .av-2 {
+        background-image: url("https://i.pravatar.cc/100?img=11");
+        background-size: cover;
+      }
+      .av-3 {
+        background-image: url("https://i.pravatar.cc/100?img=5");
+        background-size: cover;
+      }
+      .av-4 {
+        background-image: url("https://i.pravatar.cc/100?img=3");
+        background-size: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="nav-links">
+        <span class="nav-link">Assignment</span>
+        <span class="nav-link">In Progress <sup>12</sup></span>
+        <span class="nav-link">Submissions <sup>4</sup></span>
+      </div>
+      <div class="nav-icons">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="search-container">
+        <div class="search-wrapper">
+          <svg
+            style="
+              width: 16px;
+              height: 16px;
+              stroke: #9aa0b1;
+              fill: none;
+              stroke-width: 2;
+              margin: 14px 0 14px 20px;
+            "
+            viewBox="0 0 24 24"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Enter discipline names"
+          />
+          <button class="search-btn">Search now</button>
+        </div>
+      </div>
+
+      <h1>University Discipline</h1>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title-row">
+            Life Sciences <span class="dot purple"></span>
+          </div>
+          <div class="card-desc">
+            The quality and impact of research submitted by UK universities
+            across all disciplines.
+          </div>
+          <div class="tags">
+            <span class="tag">Politics</span>
+            <span class="tag">Ecomony</span>
+          </div>
+          <div class="card-footer">
+            <span>21 June 2019, 03:45 PM</span>
+            <svg class="bookmark-icon" viewBox="0 0 24 24">
+              <path
+                d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"
+              ></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title-row">
+            Science and Engineering <span class="dot green"></span>
+          </div>
+          <div class="card-desc">
+            The quality and impact of research submitted by UK universities
+            across all disciplines.
+          </div>
+          <div class="tags">
+            <span class="tag">Politics</span>
+            <span class="tag">Ecomony</span>
+          </div>
+          <div class="card-footer">
+            <span>21 June 2019, 03:45 PM</span>
+            <svg class="bookmark-icon" viewBox="0 0 24 24">
+              <path
+                d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"
+              ></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title-row">
+            Economy <span class="dot orange"></span>
+          </div>
+          <div class="card-desc">
+            The quality and impact of research submitted by UK universities
+            across all disciplines.
+          </div>
+          <div class="tags">
+            <span class="tag">Politics</span>
+            <span class="tag">Ecomony</span>
+          </div>
+          <div class="card-footer">
+            <span>21 June 2019, 03:45 PM</span>
+            <svg class="bookmark-icon" viewBox="0 0 24 24">
+              <path
+                d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"
+              ></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-middle">
+        <div class="card results-card">
+          <div>
+            <div class="results-title">Results for each unit of assessment</div>
+            <div class="avatars">
+              <div class="avatar av-1"></div>
+              <div class="avatar av-2"></div>
+            </div>
+          </div>
+          <button class="btn-status">Check Status</button>
+        </div>
+        <div class="add-card">
+          <div class="add-icon">+</div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <div>
+          <h2>Sources</h2>
+          <div class="subtitle">Active sources: 12</div>
+        </div>
+        <div style="text-align: right">
+          <button class="add-source-btn">+ Add Source</button>
+          <a href="#" class="new-sources-link">3 new sources</a>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card source-card">
+          <div class="source-header">
+            PSY methods
+            <svg class="caret-icon" viewBox="0 0 24 24">
+              <path d="M7 15l5-5 5 5"></path>
+              <path d="M7 9l5 5 5-5" style="opacity: 0.3"></path>
+            </svg>
+          </div>
+          <div class="source-user">
+            <div class="avatar av-1"></div>
+            <div class="user-info">
+              <div class="name">Sam Rogers</div>
+              <div class="uni">NY University</div>
+            </div>
+          </div>
+          <div class="source-stats">
+            <div class="stat-block">
+              <div class="stat-value">23%</div>
+              <div class="stat-label">Source Level</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-value">3k</div>
+              <div class="stat-label">Source count</div>
+            </div>
+          </div>
+          <div class="source-footer">
+            <div class="footer-block">Source Level<br />Pro</div>
+            <div class="footer-block">Source Side<br />Discipline</div>
+          </div>
+        </div>
+
+        <div class="card source-card">
+          <div class="source-header">
+            Philosophy sources
+            <svg class="caret-icon" viewBox="0 0 24 24">
+              <path d="M7 15l5-5 5 5"></path>
+              <path d="M7 9l5 5 5-5" style="opacity: 0.3"></path>
+            </svg>
+          </div>
+          <div class="source-user">
+            <div class="avatar av-3"></div>
+            <div class="user-info">
+              <div class="name">Danielle Smith</div>
+              <div class="uni">Boston University</div>
+            </div>
+          </div>
+          <div class="source-stats">
+            <div class="stat-block">
+              <div class="stat-value">65%</div>
+              <div class="stat-label">Source Level</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-value">1,2k</div>
+              <div class="stat-label">Source count</div>
+            </div>
+          </div>
+          <div class="source-footer">
+            <div class="footer-block">Source Level<br />Pro</div>
+            <div class="footer-block">Source Side<br />Discipline</div>
+          </div>
+        </div>
+
+        <div class="card source-card">
+          <div class="source-header">
+            Source name
+            <svg class="caret-icon" viewBox="0 0 24 24">
+              <path d="M7 15l5-5 5 5"></path>
+              <path d="M7 9l5 5 5-5" style="opacity: 0.3"></path>
+            </svg>
+          </div>
+          <div class="source-user">
+            <div class="avatar av-4"></div>
+            <div class="user-info">
+              <div class="name">Gita Mechomen</div>
+              <div class="uni">NY University</div>
+            </div>
+          </div>
+          <div class="source-stats">
+            <div class="stat-block">
+              <div class="stat-value">47%</div>
+              <div class="stat-label">Source Level</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-value">2,3k</div>
+              <div class="stat-label">Source count</div>
+            </div>
+          </div>
+          <div class="source-footer">
+            <div class="footer-block">Source Level<br />Pro</div>
+            <div class="footer-block">Source Side<br />Discipline</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="see-more-btn">See 13 more</button>
+    </div>
+  </body>
+</html>
