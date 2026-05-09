@@ -1,0 +1,5 @@
+-- Intentionally no-op.
+--
+-- Polymathium seeds auth-capable fixtures through `npm run supabase:seed`
+-- so users are created via the Supabase Auth admin API instead of raw SQL.
+-- This keeps the seed flow aligned with hosted Supabase Auth behavior.

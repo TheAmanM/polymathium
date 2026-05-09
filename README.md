@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Polymathium
 
-## Getting Started
+Polymathium is a high-velocity LMS with a Supabase-backed relational core. The current repository state includes the initial database architecture, local Supabase CLI setup, and a readable schema layout intended for long-term maintenance.
 
-First, run the development server:
+## Project Status
+
+- Next.js app scaffold is present
+- Supabase CLI is configured in-repo
+- Phase 1 database schema is defined
+- No frontend product work has been started for the LMS experience yet
+
+## Database Docs
+
+Database documentation lives in:
+
+- [supabase/README.md](/home/mohammad/Code/polymathium/supabase/README.md)
+
+That guide covers:
+
+- schema file layout
+- migration strategy
+- RLS model
+- module and module item architecture
+- course permission overrides
+- hosted Supabase workflow
+
+## Supabase Workflow
+
+Install dependencies first:
+
+```bash
+npm install
+```
+
+Available Supabase scripts:
+
+```bash
+npm run supabase:init
+npm run supabase:login
+npm run supabase:link -- --project-ref <project-ref>
+npm run supabase:start
+npm run supabase:status
+npm run supabase:stop
+npm run supabase:migration:new -- <name>
+```
+
+The intended workflow is:
+
+1. Edit readable schema files in [supabase/schemas](/home/mohammad/Code/polymathium/supabase/schemas)
+2. Keep migrations as historical artifacts
+3. Dry-run a hosted database push before applying it
+
+## Development
+
+Run the app locally:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Current Database Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The current schema models:
 
-## Learn More
+- institutions as the tenant boundary
+- users and RBAC
+- courses and enrollments
+- modules as content containers
+- module items as ordered content rows
+- assignments and quizzes
+- S3-backed file metadata
+- announcements
+- course catalog and student dashboard views
 
-To learn more about Next.js, take a look at the following resources:
+The schema is hardened with RLS and private authorization helpers. See [supabase/README.md](/home/mohammad/Code/polymathium/supabase/README.md) for the details.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## File Storage Direction
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Application file storage is expected to use direct S3-compatible object storage rather than Supabase Storage for LMS assets.
 
-## Deploy on Vercel
+The database already reflects that direction:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `public.files.bucket_name`
+- `public.files.s3_key`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Supabase remains the database and auth layer. Object access should be mediated through backend authorization and short-lived signed S3 URLs.
+
+## Notes
+
+- Read `AGENTS.md` before changing Next.js application code.
+- Read [supabase/README.md](/home/mohammad/Code/polymathium/supabase/README.md) before changing the database model.
