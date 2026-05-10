@@ -70,6 +70,3 @@ where e.status = 'active'
   and e.role = 'student';
 
 comment on view public.view_student_dashboard is 'Student-focused aggregate of active modules, recent announcements, and file counts.';
-
-grant select on public.view_course_catalog to anon, authenticated;
-grant select on public.view_student_dashboard to authenticated;

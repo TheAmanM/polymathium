@@ -270,19 +270,3 @@ for all
 to authenticated
 using (private.has_course_permission(course_id, 'manage_announcements'))
 with check (private.has_course_permission(course_id, 'manage_announcements'));
-
-grant select on public.institutions to anon, authenticated;
-grant select on public.courses to anon, authenticated;
-
-grant select, insert, update, delete
-on public.users,
-   public.user_roles,
-   public.enrollments,
-   public.modules,
-   public.assignments,
-   public.module_items,
-   public.files,
-   public.announcements
-to authenticated;
-
-grant insert, update, delete on public.courses to authenticated;

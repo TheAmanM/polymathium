@@ -14,17 +14,25 @@ This folder is the database source of truth for Polymathium.
 
 Use the files in [schemas](/home/mohammad/Code/polymathium/supabase/schemas) for day-to-day schema work.
 
-The readable schema is split by responsibility:
+The schema is flat and number-gapped. Files load in alphabetical order via a single glob in `config.toml`.
 
-- [00_extensions.sql](/home/mohammad/Code/polymathium/supabase/schemas/00_extensions.sql)
-- [01_types.sql](/home/mohammad/Code/polymathium/supabase/schemas/01_types.sql)
-- [02_base_functions.sql](/home/mohammad/Code/polymathium/supabase/schemas/02_base_functions.sql)
-- [03_tables.sql](/home/mohammad/Code/polymathium/supabase/schemas/03_tables.sql)
-- [04_indexes.sql](/home/mohammad/Code/polymathium/supabase/schemas/04_indexes.sql)
-- [05_private_functions.sql](/home/mohammad/Code/polymathium/supabase/schemas/05_private_functions.sql)
-- [06_triggers.sql](/home/mohammad/Code/polymathium/supabase/schemas/06_triggers.sql)
-- [07_rls.sql](/home/mohammad/Code/polymathium/supabase/schemas/07_rls.sql)
-- [08_views.sql](/home/mohammad/Code/polymathium/supabase/schemas/08_views.sql)
+```
+schemas/
+  00_extensions.sql       extensions + private schema
+  01_types.sql            enum types
+  02_base_functions.sql   set_updated_at()
+  10–19                   one file per table, in dependency order
+  30_indexes.sql          all indexes
+  40_auth_sync.sql        auth.users → public.users sync functions
+  41_validation.sql       cross-table validation triggers + enrollment guard
+  42_rls_helpers.sql      private.has_role, is_course_staff, etc.
+  50_triggers.sql         trigger bindings + auth user backfill
+  60_rls_policies.sql     ENABLE RLS + all policies
+  70_views.sql            security_invoker views
+  80_grants.sql           all role grants
+```
+
+Number gaps (10, 30, 40, 50…) leave room to insert new files without renumbering.
 
 Keep [20260509052323_polymathium_phase1_core_schema.sql](/home/mohammad/Code/polymathium/supabase/migrations/20260509052323_polymathium_phase1_core_schema.sql) as the bootstrap history entry. Do not treat it as the primary editing surface.
 
@@ -114,7 +122,7 @@ Courses support both:
 
 ### RLS
 
-RLS is enabled on all exposed `public` tables in [07_rls.sql](/home/mohammad/Code/polymathium/supabase/schemas/07_rls.sql).
+RLS is enabled on all exposed `public` tables in [60_rls_policies.sql](/home/mohammad/Code/polymathium/supabase/schemas/60_rls_policies.sql).
 
 Rules to preserve:
 
@@ -141,7 +149,7 @@ Current permission override keys used by policy:
 - `manage_files`
 - `manage_announcements`
 
-These keys are consumed by `private.has_course_permission(...)` in [05_private_functions.sql](/home/mohammad/Code/polymathium/supabase/schemas/05_private_functions.sql).
+These keys are consumed by `private.has_course_permission(...)` in [42_rls_helpers.sql](/home/mohammad/Code/polymathium/supabase/schemas/42_rls_helpers.sql).
 
 ## Direct S3 Access Model
 

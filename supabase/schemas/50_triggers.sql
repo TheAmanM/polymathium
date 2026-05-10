@@ -34,6 +34,10 @@ create trigger set_announcements_updated_at
 before update on public.announcements
 for each row execute function public.set_updated_at();
 
+create trigger guard_enrollment_self_edit
+before update on public.enrollments
+for each row execute function private.guard_enrollment_self_edit();
+
 create trigger validate_module_item_refs
 before insert or update on public.module_items
 for each row execute function private.validate_module_item_refs();
@@ -60,6 +64,7 @@ create trigger on_auth_user_updated
 after update of email on auth.users
 for each row execute function private.sync_auth_user_update();
 
+-- Backfill: sync any auth.users rows that existed before the trigger was created.
 insert into public.users (id, primary_email)
 select au.id, au.email
   from auth.users au
