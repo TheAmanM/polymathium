@@ -197,9 +197,9 @@ create table public.announcements (
   constraint announcements_course_fk
     foreign key (course_id) references public.courses (id) on delete cascade,
   constraint announcements_author_fk
-    foreign key (author_enrollment_id)
-    references public.enrollments (id)
-    on delete set null
+    foreign key (author_enrollment_id, course_id)
+    references public.enrollments (id, course_id)
+    on delete set null (author_enrollment_id)
 );
 
 comment on table public.announcements is 'Course broadcast messages stored as markdown with draft/publish support.';
@@ -224,13 +224,13 @@ create table public.module_items (
     references public.modules (id, course_id)
     on delete cascade,
   constraint module_items_file_fk
-    foreign key (file_id)
-    references public.files (id)
-    on delete set null,
+    foreign key (file_id, course_id)
+    references public.files (id, course_id)
+    on delete set null (file_id),
   constraint module_items_assignment_fk
-    foreign key (assignment_id)
-    references public.assignments (id)
-    on delete set null,
+    foreign key (assignment_id, course_id)
+    references public.assignments (id, course_id)
+    on delete set null (assignment_id),
   constraint module_items_position_non_negative
     check (position >= 0),
   constraint module_items_shape_check
@@ -525,6 +525,42 @@ begin
   return new;
 end;
 $$;
+
+create or replace function private.guard_enrollment_self_edit()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if old.user_id = auth.uid()
+    and (
+      new.role is distinct from old.role
+      or new.permission_overrides is distinct from old.permission_overrides
+    )
+    and not private.has_role(
+      array['admin']::public.platform_role[],
+      (select c.institution_id from public.courses c where c.id = old.course_id)
+    )
+    and not exists (
+      select 1 from public.enrollments e
+       where e.course_id = old.course_id
+         and e.user_id = auth.uid()
+         and e.id <> old.id
+         and e.role = 'instructor'
+         and e.status = 'active'
+    )
+  then
+    raise exception 'Cannot modify your own enrollment role or permissions';
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger guard_enrollment_self_edit
+before update on public.enrollments
+for each row execute function private.guard_enrollment_self_edit();
 
 create trigger validate_module_item_refs
 before insert or update on public.module_items
@@ -1061,9 +1097,12 @@ with check (private.has_course_permission(course_id, 'manage_announcements'));
 grant select on public.institutions to anon, authenticated;
 grant select on public.courses to anon, authenticated;
 
+grant select, update
+on public.users
+to authenticated;
+
 grant select, insert, update, delete
-on public.users,
-   public.user_roles,
+on public.user_roles,
    public.enrollments,
    public.modules,
    public.assignments,
